@@ -109,5 +109,4 @@ def buscarSalida = {
   }  
 }()
 
-
 pintaLaberinto()
