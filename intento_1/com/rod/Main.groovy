@@ -45,8 +45,6 @@ def pintaLaberinto = {
       lCount++
       print '\n'
     }
-    //print b.tipo
-    
     if(b.tipo in [bActual, bVisitado]) {
       print bCamino      
     } 
@@ -59,11 +57,11 @@ def pintaLaberinto = {
   print '\n'
 }
 
-def entrada = bloques.find { 
-    it.x == 0 && it.tipo == bLibre 
-}
-
-entrada.tipo = bActual
+def asignaPuerta = {
+  bloques.find { 
+      it.x == 0 && it.tipo == bLibre 
+  }.tipo = bActual
+}()
 
 def asignaActual = { b ->
   b.tipo = bActual
@@ -96,16 +94,20 @@ def asignaActual = { b ->
   } 
   return true 
 }
-def seguir = true
-while(seguir) {
-  def actual = bloques.find { 
-    it.tipo == bActual
-  }
-  if(actual.abajo == null) {
-    seguir = false
-  } else {
-    seguir = asignaActual(actual)
-  }
-}
+
+def buscarSalida = {
+  def seguir = true
+  while(seguir) {
+    def actual = bloques.find { 
+      it.tipo == bActual
+    }
+    if(actual.abajo == null) {
+      seguir = false
+    } else {
+      seguir = asignaActual(actual)
+    }
+  }  
+}()
+
 
 pintaLaberinto()
