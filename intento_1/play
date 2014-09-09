@@ -1,0 +1,3 @@
+# chmod +x play
+# ./play
+groovy com/rod/Main.groovy
