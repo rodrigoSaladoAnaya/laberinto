@@ -1,5 +1,8 @@
 package com.rod
 
+def time_start = System.currentTimeMillis();
+def time_end 
+
 def laberinto = {
   new File('com/rod/laberinto.txt').text
 }()
@@ -52,9 +55,10 @@ def pintaLaberinto = {
       print bLibre
     } else {
       print b.tipo
-    }
+    }    
   }  
   print '\n'
+  println "Termino en ${time_end - time_start} millis"
 }
 
 def asignaPuerta = {
@@ -78,17 +82,17 @@ def asignaActual = { b ->
     b.tipo = bVisitado
     b.arriba.tipo = bActual    
   } else if(b.derecha && b.derecha.tipo == bVisitado) { // Repiten camino
-      b.tipo = bRepetido
-      b.derecha.tipo = bActual      
+    b.tipo = bRepetido
+    b.derecha.tipo = bActual      
   } else if(b.arriba && b.arriba.tipo == bVisitado) {
-      b.tipo = bRepetido
-      b.arriba.tipo = bActual      
+    b.tipo = bRepetido
+    b.arriba.tipo = bActual      
   } else if(b.izquierda && b.izquierda.tipo == bVisitado) {
-      b.tipo = bRepetido
-      b.izquierda.tipo = bActual
+    b.tipo = bRepetido
+    b.izquierda.tipo = bActual
   } else if(b.abajo && b.abajo.tipo == bVisitado) {
-      b.tipo = bRepetido
-      b.abajo.tipo = bActual
+    b.tipo = bRepetido
+    b.abajo.tipo = bActual
   } else {    
     return false
   } 
@@ -102,6 +106,7 @@ def buscarSalida = {
       it.tipo == bActual
     }
     if(actual.abajo == null) {
+      time_end = System.currentTimeMillis();
       seguir = false
     } else {
       seguir = asignaActual(actual)
