@@ -1,10 +1,10 @@
 package com.rod
 
-def time_start = System.currentTimeMillis();
-def time_end 
+def inicio = System.currentTimeMillis();
+def termino 
 
 def laberinto = {
-  new File('com/rod/laberinto.txt').text
+  new File('./laberintos/superchallenge.txt').text
 }()
 
 def bloques = []
@@ -29,7 +29,7 @@ def setVecinos = {
     b.abajo = bloque(b?.x + 1, b?.y)
     b.derecha = bloque(b?.x, b?.y + 1)
     b.izquierda = bloque(b?.x, b?.y - 1)
-    b.arriba = bloque(b?.x - 1, b?.y) 
+    b.arriba = bloque(b?.x - 1, b?.y)
   }
 }()
 
@@ -58,7 +58,7 @@ def pintaLaberinto = {
     }    
   }  
   print '\n'
-  println "Termino en ${time_end - time_start} millis"
+  println "Termino en ${termino - inicio} millis"
 }
 
 def asignaPuerta = {
@@ -69,31 +69,30 @@ def asignaPuerta = {
 
 def asignaActual = { b ->
   b.tipo = bActual
-  if(b.abajo && b.abajo.tipo == bLibre) { //Abren camino
-    b.tipo = bVisitado
-    b.abajo.tipo = bActual    
-  } else if(b.derecha && b.derecha.tipo == bLibre) {
-    b.tipo = bVisitado
-    b.derecha.tipo = bActual    
-  } else if(b.izquierda && b.izquierda.tipo == bLibre) {
-    b.tipo = bVisitado
-    b.izquierda.tipo = bActual    
-  } else if(b.arriba && b.arriba.tipo == bLibre) {
-    b.tipo = bVisitado
-    b.arriba.tipo = bActual    
-  } else if(b.derecha && b.derecha.tipo == bVisitado) { // Repiten camino
-    b.tipo = bRepetido
-    b.derecha.tipo = bActual      
-  } else if(b.arriba && b.arriba.tipo == bVisitado) {
-    b.tipo = bRepetido
-    b.arriba.tipo = bActual      
-  } else if(b.izquierda && b.izquierda.tipo == bVisitado) {
-    b.tipo = bRepetido
-    b.izquierda.tipo = bActual
-  } else if(b.abajo && b.abajo.tipo == bVisitado) {
-    b.tipo = bRepetido
-    b.abajo.tipo = bActual
-  } else {    
+  def abreCamino = { leafString   ->
+    if(b."${leafString}" && b."${leafString}".tipo == bLibre) {
+      b.tipo = bVisitado
+      b."${leafString}".tipo = bActual
+      return true
+    }
+    return false
+  }
+  def repiteCamino = { leafString   ->
+    if(b."${leafString}" && b."${leafString}".tipo == bVisitado) {
+      b.tipo = bRepetido
+      b."${leafString}".tipo = bActual
+      return true
+    }
+    return false
+  }
+
+  //El orden Orden es muy importante
+  def caminoOps = ["abajo", "derecha", "izquierda", "arriba"]
+  if(caminoOps.find { 
+    abreCamino(it) == true 
+  }){} else if(caminoOps.find { 
+    repiteCamino(it) == true 
+  }){} else {    
     return false
   } 
   return true 
@@ -106,7 +105,7 @@ def buscarSalida = {
       it.tipo == bActual
     }
     if(actual.abajo == null) {
-      time_end = System.currentTimeMillis();
+      termino = System.currentTimeMillis();
       seguir = false
     } else {
       seguir = asignaActual(actual)
