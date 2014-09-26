@@ -7,12 +7,16 @@ package com.rod
 
 def inicio = System.currentTimeMillis();
 def termino 
-
-def laberinto = {
-  new File('./laberintos/laberinto.txt').text
-}()
-
+//Tipo de bloques
+Character bLibre = ' '
+Character bOcupado = '*'
+Character bActual = 'A'
+Character bVisitado = '1'
+Character bRepetido = '2'
+Character bCamino = '+'
+def laberinto = new File('./laberintos/laberinto.txt').text
 def bloques = []
+
 def bloque = { lab -> 
   lab.eachLine { linea, index ->
     def yCont = 0
@@ -29,48 +33,22 @@ def bloque = { lab ->
   }
 }(laberinto)
 
-def setVecinos = {
-  bloques.collect { b ->
+def setVecinos = { blqs ->
+  blqs.collect { b ->
     b.abajo = bloque(b?.x + 1, b?.y)
     b.derecha = bloque(b?.x, b?.y + 1)
     b.izquierda = bloque(b?.x, b?.y - 1)
     b.arriba = bloque(b?.x - 1, b?.y)
   }
-}()
+}(bloques)
 
-//Tipo de bloques
-Character bLibre = ' '
-Character bOcupado = '*'
-Character bActual = 'A'
-Character bVisitado = '1'
-Character bRepetido = '2'
-Character bCamino = '+'
-
-def pintaLaberinto = {
-  def lCount = 0
-  bloques.each { b ->
-    if(b.x != lCount) {
-      lCount++
-      print '\n'
-    }
-    if(b.tipo in [bActual, bVisitado]) {
-      print bCamino      
-    } 
-    else if(b.tipo == bRepetido) {
-      print bLibre
-    } else {
-      print b.tipo
-    }    
-  }  
-  print '\n'
-  println "Termino en ${termino - inicio} millis"
-}
-
-def asignaPuerta = {
-  bloques.find { 
+def puerta = { blqs ->
+  def puerta = blqs.find { 
       it.x == 0 && it.tipo == bLibre 
-  }.tipo = bActual
-}()
+  }
+  puerta.tipo = bActual
+  return puerta
+}(bloques)
 
 def asignaActual = { b ->
   b.tipo = bActual
@@ -93,29 +71,48 @@ def asignaActual = { b ->
 
   //El orden Orden es muy importante
   def caminoOps = ["abajo", "derecha", "izquierda", "arriba"]
-  if(caminoOps.find { 
-    abreCamino(it) == true 
-  }){} else if(caminoOps.find { 
-    repiteCamino(it) == true 
-  }){} else {    
-    return false
-  } 
-  return true 
+  return (caminoOps.find { abreCamino(it)} || caminoOps.find { repiteCamino(it)})  
 }
 
-def buscarSalida = {
+def buscarSalida = { blqs ->
   def seguir = true
   while(seguir) {
-    def actual = bloques.find { 
+    def actual = blqs.find { 
       it.tipo == bActual
     }
-    if(actual.abajo == null) {
+    def vecinos = [
+        actual.abajo, actual.arriba, 
+        actual.izquierda, actual.derecha
+    ]    
+    if(vecinos.findAll { it == null } && actual != puerta) {
       termino = System.currentTimeMillis();
       seguir = false
     } else {
       seguir = asignaActual(actual)
     }
   }  
-}()
+}(bloques)
 
-pintaLaberinto()
+def pintaLaberinto = { blqs, debug = false ->
+  def lCount = 0
+  blqs.each { b ->    
+    if(b.x != lCount) {
+      lCount++
+      print '\n'
+    }
+    if(debug) {
+      print b.tipo
+    } else {
+      if(b.tipo in [bActual, bVisitado]) {
+        print bCamino      
+      } 
+      else if(b.tipo == bRepetido) {
+        print bLibre
+      } else {
+        print b.tipo
+      }    
+    }
+  }  
+  print '\n'
+  println "Termino en ${termino - inicio} millis"
+}(bloques)
