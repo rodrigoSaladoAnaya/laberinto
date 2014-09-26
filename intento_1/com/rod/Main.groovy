@@ -43,11 +43,11 @@ def setVecinos = { blqs ->
 }(bloques)
 
 def puerta = { blqs ->
-  def puerta = blqs.find { 
+  def p = blqs.find { 
       it.x == 0 && it.tipo == bLibre 
   }
-  puerta.tipo = bActual
-  return puerta
+  p.tipo = bActual
+  return p
 }(bloques)
 
 def asignaActual = { b ->
