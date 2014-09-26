@@ -4,7 +4,7 @@ def inicio = System.currentTimeMillis();
 def termino 
 
 def laberinto = {
-  new File('./laberintos/superchallenge.txt').text
+  new File('./laberintos/laberinto.txt').text
 }()
 
 def bloques = []
