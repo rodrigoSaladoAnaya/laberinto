@@ -2,7 +2,7 @@ package com.rod
 
 /**
 * 1er Intento para resolver: https://www.codeeval.com/browse/157/
-* Use el scrit ../../play para ejecutarlo
+* Use el script ../../play para ejecutarlo
 */
 
 def inicio = System.currentTimeMillis();
